@@ -1,0 +1,12 @@
+[
+  {"id": "aws", "name": "Amazon Web Services", "category": "cloud", "type": "statuspage"},
+  {"id": "gcp", "name": "Google Cloud Platform", "category": "cloud", "type": "statuspage"},
+  {"id": "azure", "name": "Microsoft Azure", "category": "cloud", "type": "statuspage"},
+  {"id": "cloudflare", "name": "Cloudflare", "category": "cdn", "type": "statuspage"},
+  {"id": "fastly", "name": "Fastly", "category": "cdn", "type": "statuspage"},
+  {"id": "openai", "name": "OpenAI", "category": "ai", "type": "api"},
+  {"id": "anthropic", "name": "Anthropic", "category": "ai", "type": "api"},
+  {"id": "stripe", "name": "Stripe", "category": "payments", "type": "statuspage"},
+  {"id": "github", "name": "GitHub", "category": "dev-tools", "type": "statuspage"},
+  {"id": "vercel", "name": "Vercel", "category": "dev-tools", "type": "statuspage"}
+]

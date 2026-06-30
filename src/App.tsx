@@ -63,6 +63,7 @@ import {
   ZapOff
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import IntroPage from "./components/IntroPage";
 
 // Lucide mapping engine to escape raw symbol reference issues
 const ICON_MAP: Record<string, any> = {
@@ -75,7 +76,7 @@ const ICON_MAP: Record<string, any> = {
   Rss, Camera, Youtube, Settings, AlertTriangle, HeartPulse, RefreshCw
 };
 
-export default function IPulseMainWindow() {
+export default function App() {
   const {
     services,
     incidents,
@@ -175,6 +176,7 @@ export default function IPulseMainWindow() {
 
   return (
     <div className="relative min-h-screen bg-black text-gray-200 flex flex-col lg:flex-row pb-20 lg:pb-0">
+      {activeView === "intro" && <IntroPage onEnter={() => setActiveView("dashboard")} />}
       
       {/* GLOWING AURORAS IN BACKDROP */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#6C5CE7]/10 rounded-full blur-[160px] pointer-events-none" />
@@ -584,7 +586,6 @@ export default function IPulseMainWindow() {
                         {historyPoints.length > 1 && (() => {
                           const pointsString = historyPoints.map((point, index) => {
                             const x = (index / (historyPoints.length - 1)) * 100;
-                            // map ipi 90-100 to y 38-2 (higher is better on top)
                             const clampedIpi = Math.max(88, Math.min(100, point.ipi));
                             const y = 35 - ((clampedIpi - 88) / 12) * 32;
                             return `${x},${y}`;
@@ -670,7 +671,6 @@ export default function IPulseMainWindow() {
                         ((operationalCount + maintCount + degradedCount * 0.5) / catServices.length * 100).toFixed(0)
                       );
 
-                      // Determine overall visual health gradient glow
                       let colorBorderClass = "hover:border-emerald-500/20";
                       if (downCount > 0) colorBorderClass = "hover:border-rose-500/35 border-rose-500/10";
                       else if (degradedCount > 0) colorBorderClass = "hover:border-amber-500/35 border-amber-500/10";
@@ -700,7 +700,6 @@ export default function IPulseMainWindow() {
                             </span>
                           </div>
 
-                          {/* Interactive status indicators blocks for sub-services */}
                           <div className="flex flex-wrap gap-1 mt-3">
                             {catServices.map(subS => {
                               let innerCol = getStatusDotColor(subS.status);
@@ -792,7 +791,6 @@ export default function IPulseMainWindow() {
                                   </div>
                                 </div>
 
-                                {/* Custom nested diagnostic logs updates */}
                                 {inc.timeline.length > 0 && (
                                   <div className="mt-4 pt-3 border-t border-white/5 bg-white/[0.01] rounded-lg p-3">
                                     <div className="text-[10px] font-mono text-indigo-400 uppercase tracking-widest mb-1.5 font-bold">
@@ -865,7 +863,6 @@ export default function IPulseMainWindow() {
                                 {service.description}
                               </p>
 
-                              {/* Performance metrics display */}
                               <div className="flex flex-col gap-2 mt-4 pt-3 border-t border-white/5 text-[11px] font-mono text-gray-500">
                                 <div className="flex items-center justify-between">
                                   <span className="flex items-center gap-1">
@@ -892,7 +889,6 @@ export default function IPulseMainWindow() {
                   {/* RIGHT PANEL: LIVE SYSTEM ACTIVITY LEDGER & DEPENDENCY PREVIEW */}
                   <div className="xl:col-span-4 flex flex-col gap-6">
                     
-                    {/* SYSTEM LIVE TICKER */}
                     <div className="bg-white/[0.02] border border-white/5 rounded-[28px] p-5 backdrop-blur-3xl shadow-xl flex flex-col h-[400px]">
                       <div className="flex items-center justify-between mb-3 shrink-0">
                         <div className="flex items-center gap-2">
@@ -933,7 +929,6 @@ export default function IPulseMainWindow() {
                       </div>
                     </div>
 
-                    {/* MINI ADVANCED VISUALIZER PREVIEW CARD */}
                     <div 
                       onClick={() => setActiveView("visualizer")} 
                       className="bg-white/[0.02] border border-white/5 rounded-[28px] p-5 hover:border-indigo-500/30 cursor-pointer backdrop-blur-3xl shadow-xl relative overflow-hidden group"
@@ -944,22 +939,18 @@ export default function IPulseMainWindow() {
                       <div className="text-[10px] text-indigo-400 font-mono tracking-wider font-bold mb-1 uppercase">GRID TOPOLOGY PREVIEW</div>
                       <h4 className="text-sm font-bold font-display text-white mb-2">Live ISP Routing Interconnect Map</h4>
                       
-                      {/* Cool graphic SVG illustration of failure cascade */}
                       <div className="h-32 bg-black/50 rounded-xl border border-white/5 relative flex items-center justify-center overflow-hidden mt-3">
                         <svg className="w-full h-full" viewBox="0 0 100 50">
-                          {/* Paths connecting items */}
                           <path d="M 15,25 Q 50,5 85,15" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
                           <path d="M 15,25 Q 50,45 85,35" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
                           <path d="M 15,25 Q 50,25 85,25" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
                           
-                          {/* Nodes */}
                           <circle cx="15" cy="25" r="4" className="fill-indigo-500" />
                           <circle cx="50" cy="15" r="3.5" className="fill-emerald-400" />
                           <circle cx="50" cy="35" r="3.5" className="fill-amber-400" />
                           <circle cx="85" cy="15" r="4" className="fill-sky-400 animate-pulse" />
                           <circle cx="85" cy="35" r="4" className="fill-indigo-300" />
 
-                          {/* Laser light pulse on active line */}
                           <circle cx="15" cy="25" r="2" fill="#00E676">
                             <animateMotion 
                               path="M 15,25 Q 50,5 85,15" 
@@ -992,7 +983,6 @@ export default function IPulseMainWindow() {
             {activeView === "incidents" && (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                {/* Outage listings */}
                 <div className="lg:col-span-8 flex flex-col gap-6">
                   <div className="bg-white/[0.03] border border-white/5 rounded-[28px] p-6 backdrop-blur-3xl shadow-2xl">
                     <h3 className="text-xl font-bold font-display text-white mb-4">Historical Incidents Control Desk</h3>
@@ -1024,12 +1014,11 @@ export default function IPulseMainWindow() {
                             </div>
 
                             <h4 className="text-md font-bold text-white font-display">{inc.title}</h4>
-                            <p className="text-xs text-gray-450 mt-1 font-mono text-gray-450 text-[11px]">
+                            <p className="text-xs text-gray-455 mt-1 font-mono text-[11px]">
                               Identified: {inc.startedAt} &bull; Updated: {inc.updatedAt}
                             </p>
                             <p className="text-xs text-gray-300 mt-2">{inc.description}</p>
 
-                            {/* Detailed Step logs for incidents */}
                             <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-3">
                               <h5 className="text-[10px] font-mono text-indigo-400 tracking-wider font-bold">HISTORICAL INCIDENT STEPS</h5>
                               {inc.timeline.map((step, sIdx) => (
@@ -1044,7 +1033,7 @@ export default function IPulseMainWindow() {
                                         {step.status}
                                       </span>
                                     </div>
-                                    <p className="text-xs text-gray-350 mt-1">
+                                    <p className="text-xs text-gray-300 mt-1">
                                       {step.message}
                                     </p>
                                   </div>
@@ -1058,7 +1047,6 @@ export default function IPulseMainWindow() {
                   </div>
                 </div>
 
-                {/* Simulated Scenarios sidebar directly inside incident dashboard */}
                 <div className="lg:col-span-4 flex flex-col gap-6">
                   <div className="bg-white/[0.03] border border-white/5 rounded-[28px] p-6 backdrop-blur-3xl shadow-2xl">
                     <div className="flex items-center gap-2 mb-4">
@@ -1157,7 +1145,6 @@ export default function IPulseMainWindow() {
 
                 <div className="h-[520px] bg-neutral-950/50 backdrop-blur-3xl border border-white/5 rounded-2xl p-4 overflow-hidden relative flex items-center justify-center">
                   
-                  {/* SVG Map Layout */}
                   <svg className="w-full h-full min-w-[650px]" viewBox="0 0 1000 500">
                     <defs>
                       <marker id="arrow" viewBox="0 0 10 10" refX="28" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -1168,7 +1155,6 @@ export default function IPulseMainWindow() {
                       </marker>
                     </defs>
 
-                    {/* Nodes Matrix Coordinate list */}
                     {(() => {
                       const NODE_COORDS: Record<string, { x: number; y: number; label: string; type: string; cat: string }> = {
                         "aws": { x: 140, y: 150, label: "Amazon Web Services", type: "cloud", cat: "Cloud" },
@@ -1188,7 +1174,6 @@ export default function IPulseMainWindow() {
                         "discord": { x: 860, y: 280, label: "Discord Client Servers", type: "comm", cat: "Communication" },
                       };
 
-                      // Dependency linkages definition for lines plotting
                       const LINKS = [
                         { from: "aws", to: "cloudflare" },
                         { from: "aws", to: "stripe" },
@@ -1218,13 +1203,11 @@ export default function IPulseMainWindow() {
 
                       return (
                         <>
-                          {/* LINK DRAWS */}
                           {LINKS.map((lk, lkIdx) => {
                             const nFrom = NODE_COORDS[lk.from];
                             const nTo = NODE_COORDS[lk.to];
                             if (!nFrom || !nTo) return null;
 
-                            // Core status checking of link for cascade warnings
                             const fromServ = services.find(s => s.id === lk.from);
                             const toServ = services.find(s => s.id === lk.to);
                             
@@ -1241,7 +1224,6 @@ export default function IPulseMainWindow() {
                               strokeWidth = "2.0";
                             }
 
-                            // Dynamic interactive highlights hover selections
                             const isHighlighted = selectedDependencyNode === lk.from || selectedDependencyNode === lk.to;
                             if (selectedDependencyNode && isHighlighted) {
                               strokeColor = "#6C5CE7";
@@ -1259,7 +1241,6 @@ export default function IPulseMainWindow() {
                                   className="transition-all duration-300"
                                 />
                                 
-                                {/* Bullet path light indicators flowing downward on critical routes */}
                                 {(isLinkCritical || isLinkDegraded || isHighlighted) && (
                                   <circle r="3" fill={isLinkCritical ? "#FF4D6D" : isLinkDegraded ? "#FFB020" : "#00B8FF"}>
                                     <animateMotion
@@ -1273,12 +1254,10 @@ export default function IPulseMainWindow() {
                             );
                           })}
 
-                          {/* NODE BINDINGS DRAWS */}
                           {Object.entries(NODE_COORDS).map(([id, nd]) => {
                             const servInfo = services.find(s => s.id === id);
                             const name = servInfo ? servInfo.name : nd.label;
                             const status = servInfo ? servInfo.status : "operational";
-                            const category = servInfo ? servInfo.category : nd.cat;
                             const latency = servInfo ? servInfo.latency : 50;
 
                             const isCurrentSelected = id === selectedDependencyNode;
@@ -1290,7 +1269,6 @@ export default function IPulseMainWindow() {
                                 className="cursor-pointer group"
                                 onClick={() => setSelectedDependencyNode(selectedDependencyNode === id ? null : id)}
                               >
-                                {/* Circle outer aura ring for active/failures checks */}
                                 <circle 
                                   cx="0" 
                                   cy="0" 
@@ -1301,7 +1279,6 @@ export default function IPulseMainWindow() {
                                   className="transition-all duration-300 shadow-2xl"
                                 />
 
-                                {/* Interactive inner small circle status indicator */}
                                 <circle 
                                   cx="0" 
                                   cy="0" 
@@ -1309,7 +1286,6 @@ export default function IPulseMainWindow() {
                                   fill="rgba(255,255,255,0.02)"
                                 />
 
-                                {/* Miniature center micro LED light */}
                                 <circle 
                                   cx="0" 
                                   cy="0" 
@@ -1317,7 +1293,6 @@ export default function IPulseMainWindow() {
                                   className={`transition-all duration-300 ${getStatusDotColor(status)}`}
                                 />
 
-                                {/* Hover tooltip text card overlays */}
                                 <g transform="translate(0, 38)">
                                   <rect
                                     x="-65"
@@ -1358,7 +1333,6 @@ export default function IPulseMainWindow() {
                     })()}
                   </svg>
 
-                  {/* HUD controls floating on Graph */}
                   <div className="absolute bottom-4 left-4 bg-black/90 border border-white/5 p-3 rounded-xl font-mono text-[10px] flex flex-col gap-1 backdrop-blur-3xl">
                     <span className="text-gray-500 font-bold">TOPOLOGIC INTERACTION</span>
                     <span className="text-gray-300">Click individual nodes to isolate upstream dependencies.</span>
@@ -1382,14 +1356,12 @@ export default function IPulseMainWindow() {
               return (
                 <div className="flex flex-col gap-6">
                   
-                  {/* Detailed service Header block */}
                   <div className="bg-white/[0.03] border border-white/5 rounded-[28px] p-6 backdrop-blur-3xl shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                     <div className="absolute top-0 right-0 p-4 font-mono text-[10px] text-gray-500">
                       INDEX PIN: {serv.id.toUpperCase()}
                     </div>
                     
                     <div className="flex items-start md:items-center gap-4">
-                      {/* Heavy Icon banner */}
                       <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border-2 ${getStatusColor(serv.status)}`}>
                         {renderLucide(serv.icon, "w-7 h-7")}
                       </div>
@@ -1400,7 +1372,7 @@ export default function IPulseMainWindow() {
                             {serv.status}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-450 italic text-gray-400">{serv.description}</p>
+                        <p className="text-sm italic text-gray-400">{serv.description}</p>
                       </div>
                     </div>
 
@@ -1439,10 +1411,8 @@ export default function IPulseMainWindow() {
                     </div>
                   </div>
 
-                  {/* DIAGNOSTIC GRAPH SUB GROUPS GRID */}
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     
-                    {/* Components check status block */}
                     <div className="lg:col-span-4 bg-white/[0.03] border border-white/5 rounded-[28px] p-6 backdrop-blur-3xl shadow-xl flex flex-col gap-4">
                       <h4 className="text-sm font-bold font-display text-white border-b border-white/5 pb-2">
                         Sub-Component Gateway Handlers
@@ -1451,7 +1421,7 @@ export default function IPulseMainWindow() {
                         {serv.components.map(comp => (
                           <div key={comp.id} className="flex items-center justify-between p-2.5 rounded bg-white/[0.01] border border-white/[0.02]">
                             <div className="flex items-center gap-2">
-                              <span className="text-[10px] font-mono text-gray-500 uppercase">SYS_NODE</span>
+                              <span className="text-[10px] font-mono text-gray-500">SYS_NODE</span>
                               <span className="text-xs text-gray-200 font-medium">{comp.name}</span>
                             </div>
                             <span className={`text-[9px] font-mono px-2 py-0.5 rounded uppercase font-bold ${getStatusColor(comp.status)}`}>
@@ -1461,7 +1431,6 @@ export default function IPulseMainWindow() {
                         ))}
                       </div>
 
-                      {/* Dependent list upstream & down */}
                       <div className="mt-4 pt-4 border-t border-white/5 flex flex-col gap-3">
                         <h4 className="text-xs font-mono font-bold text-gray-500 uppercase tracking-wider">
                           Topology Path Cascade
@@ -1511,10 +1480,8 @@ export default function IPulseMainWindow() {
                       </div>
                     </div>
 
-                    {/* Latency and simulation charts panel */}
                     <div className="lg:col-span-8 flex flex-col gap-6">
                       
-                      {/* Latency Live Fluctuations Chart */}
                       <div className="bg-white/[0.03] border border-white/5 rounded-[28px] p-6 backdrop-blur-3xl shadow-xl flex flex-col justify-between">
                         <div className="flex items-center justify-between mb-4">
                           <div>
@@ -1526,9 +1493,7 @@ export default function IPulseMainWindow() {
                           </span>
                         </div>
 
-                        {/* Beautiful live fluctuating latency line */}
                         <div className="h-44 w-full bg-black/50 border border-white/5 rounded-xl p-4 overflow-hidden relative flex items-center justify-center">
-                          {/* We draw a simulated dynamic random latency wave sparkline */}
                           <svg className="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
                             <defs>
                               <linearGradient id="latencyGlow" x1="0" y1="0" x2="0" y2="1">
@@ -1537,23 +1502,19 @@ export default function IPulseMainWindow() {
                               </linearGradient>
                             </defs>
                             
-                            {/* Horizontal grid guide rails */}
                             <line x1="0" y1="10" x2="100" y2="10" stroke="rgba(255,255,255,0.02)" strokeWidth="0.5" />
                             <line x1="0" y1="20" x2="100" y2="20" stroke="rgba(255,255,255,0.02)" strokeWidth="0.5" />
                             <line x1="0" y1="30" x2="100" y2="30" stroke="rgba(255,255,255,0.02)" strokeWidth="0.5" />
 
                             {(() => {
-                              // We generate 12 steps matching serv.latency
                               const seedPoints: number[] = [];
                               for (let i = 0; i < 15; i++) {
-                                // fluctuate near serv.latency deterministically to prevent hydration mismatch
                                 const delta = Math.sin(i * 1.5) * 15 + Math.cos(i * 2.2) * 4;
                                 seedPoints.push(Math.max(12, serv.latency + delta));
                               }
 
                               const pointsString = seedPoints.map((val, idx) => {
                                 const x = (idx / (seedPoints.length - 1)) * 100;
-                                // map val 0-250 to 38-2
                                 const y = 35 - (Math.min(250, val) / 250) * 32;
                                 return `${x},${y}`;
                               });
@@ -1582,14 +1543,11 @@ export default function IPulseMainWindow() {
                         </div>
                       </div>
 
-                      {/* SLA metrics days block */}
                       <div className="bg-white/[0.03] border border-white/5 rounded-[28px] p-6 backdrop-blur-3xl shadow-xl">
                         <h4 className="text-sm font-bold font-display text-white mb-3">Service SLA Uptime Node Matrix</h4>
                         
-                        {/* Elegant 30 green small blocks illustrating uptime days */}
                         <div className="grid grid-cols-10 sm:grid-cols-15 md:grid-cols-30 gap-1.5">
                           {Array.from({ length: 30 }).map((_, idx) => {
-                            // Inject simulated error on some days if status degraded
                             const showIncident = (idx === 14 && serv.status !== "operational") || (idx === 7 && serv.status === "outage");
                             let col = "bg-emerald-500";
                             let lbl = "Nominal Uptime";
@@ -1688,7 +1646,6 @@ export default function IPulseMainWindow() {
       <AnimatePresence>
         {isSimulatorOpen && (
           <>
-            {/* Backdrop cover */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.5 }}
@@ -1696,7 +1653,6 @@ export default function IPulseMainWindow() {
               onClick={() => setIsSimulatorOpen(false)}
               className="fixed inset-0 bg-black z-40"
             />
-            {/* Drawer body */}
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
@@ -1724,7 +1680,7 @@ export default function IPulseMainWindow() {
                     onClick={() => { triggerScenario("cloudflare"); setIsSimulatorOpen(false); }}
                     className="p-3 bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/20 text-rose-300 rounded-xl text-left text-xs font-bold"
                   >
-                    Cloudflare BGP Leak Leak
+                    Cloudflare BGP Route Leak
                     <span className="block text-[8px] text-rose-400/60 font-normal mt-0.5">Impacts CDN, Vercel, Discord, ChatGPT</span>
                   </button>
 
