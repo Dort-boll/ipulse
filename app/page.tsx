@@ -866,14 +866,21 @@ export default function IPulseMainWindow() {
                               </p>
 
                               {/* Performance metrics display */}
-                              <div className="flex items-center justify-between text-[11px] font-mono mt-4 pt-3 border-t border-white/5 text-gray-500">
-                                <span className="flex items-center gap-1">
-                                  <Activity className="w-3.5 h-3.5 text-gray-500" />
-                                  Ping: <strong className="text-white">{service.latency}ms</strong>
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  Uptime: <strong className={getSlaColor(service.uptime)}>{service.uptime}%</strong>
-                                </span>
+                              <div className="flex flex-col gap-2 mt-4 pt-3 border-t border-white/5 text-[11px] font-mono text-gray-500">
+                                <div className="flex items-center justify-between">
+                                  <span className="flex items-center gap-1">
+                                    <Activity className="w-3.5 h-3.5 text-gray-500" />
+                                    Ping: <strong className="text-white">{service.latency}ms</strong>
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    Uptime: <strong className={getSlaColor(service.uptime)}>{service.uptime}%</strong>
+                                  </span>
+                                </div>
+                                <div className="flex items-center justify-between text-[10px] text-gray-500 border-t border-white/[0.02] pt-1.5">
+                                  <span>Load: <strong className="text-gray-300">{service.cpuLoad ?? 0}% CPU</strong></span>
+                                  <span>Err: <strong className={service.errorRate && service.errorRate > 0.5 ? "text-rose-400 font-bold" : "text-emerald-400"}>{service.errorRate ?? 0}%</strong></span>
+                                  <span>Rate: <strong className="text-gray-300">{service.requestRate ?? 0} rps</strong></span>
+                                </div>
                               </div>
                             </div>
                           );
@@ -1397,20 +1404,35 @@ export default function IPulseMainWindow() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto shrink-0 font-mono">
-                      <div className="bg-white/[0.01] border border-white/5 rounded-xl p-3 text-center sm:text-left shrink-0">
-                        <span className="text-[10px] text-gray-500 block">SLA ROUTE HEURISTICS</span>
-                        <strong className={`text-lg font-bold ${getSlaColor(serv.uptime)}`}>{serv.uptime}%</strong>
+                    <div className="flex flex-wrap items-center gap-3 w-full md:w-auto shrink-0 font-mono">
+                      <div className="bg-white/[0.01] border border-white/5 rounded-xl p-2.5 text-center sm:text-left shrink-0 min-w-[90px]">
+                        <span className="text-[9px] text-gray-500 block leading-tight">SLA UPTIME</span>
+                        <strong className={`text-md font-bold ${getSlaColor(serv.uptime)}`}>{serv.uptime}%</strong>
                       </div>
                       
-                      <div className="bg-white/[0.01] border border-white/5 rounded-xl p-3 text-center sm:text-left shrink-0">
-                        <span className="text-[10px] text-gray-500 block">LAST LATENCY QUERY</span>
-                        <strong className="text-lg font-bold text-white">{serv.latency} ms</strong>
+                      <div className="bg-white/[0.01] border border-white/5 rounded-xl p-2.5 text-center sm:text-left shrink-0 min-w-[90px]">
+                        <span className="text-[9px] text-gray-500 block leading-tight">LATENCY</span>
+                        <strong className="text-md font-bold text-white">{serv.latency} ms</strong>
+                      </div>
+
+                      <div className="bg-white/[0.01] border border-white/5 rounded-xl p-2.5 text-center sm:text-left shrink-0 min-w-[90px]">
+                        <span className="text-[9px] text-gray-500 block leading-tight">VOLUME</span>
+                        <strong className="text-md font-bold text-indigo-400">{serv.requestRate ?? 0} rps</strong>
+                      </div>
+
+                      <div className="bg-white/[0.01] border border-white/5 rounded-xl p-2.5 text-center sm:text-left shrink-0 min-w-[90px]">
+                        <span className="text-[9px] text-gray-500 block leading-tight">ERROR RATE</span>
+                        <strong className={`text-md font-bold ${serv.errorRate && serv.errorRate > 0.5 ? "text-rose-400 font-bold" : "text-emerald-400"}`}>{serv.errorRate ?? 0}%</strong>
+                      </div>
+
+                      <div className="bg-white/[0.01] border border-white/5 rounded-xl p-2.5 text-center sm:text-left shrink-0 min-w-[90px]">
+                        <span className="text-[9px] text-gray-500 block leading-tight">NODE LOAD</span>
+                        <strong className="text-md font-bold text-gray-200">{serv.cpuLoad ?? 0}%</strong>
                       </div>
 
                       <button 
                         onClick={() => setActiveView("dashboard")}
-                        className="px-4 py-3 bg-white/5 hover:bg-white/10 text-gray-300 font-semibold text-xs rounded-xl flex items-center justify-center gap-1 cursor-pointer"
+                        className="px-3.5 py-3.5 bg-white/5 hover:bg-white/10 text-gray-300 font-semibold text-xs rounded-xl flex items-center justify-center gap-1 cursor-pointer transition-colors duration-150 shrink-0"
                       >
                         <X className="w-3.5 h-3.5" /> Close Diagnosis
                       </button>

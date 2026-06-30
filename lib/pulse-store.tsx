@@ -784,10 +784,37 @@ function sSeverityMultiplier(sev: string): number {
   return 0;
 }
 
+const getDeterministicValue = (str: string, range: number, min: number = 0): number => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return min + Math.abs(hash % range);
+};
+
+const ENRICH_SERVICE = (s: Service): Service => {
+  const isHighTraffic = s.id === "openai" || s.id === "cloudflare" || s.id === "cloudflare-dns" || s.id === "aws" || s.id === "gcp" || s.id === "google-dns";
+  const defaultRps = isHighTraffic
+    ? getDeterministicValue(s.id, 3800, 1200)
+    : getDeterministicValue(s.id, 850, 150);
+  const defaultCpu = getDeterministicValue(s.id, 25, 15);
+  const defaultErr = s.status === "operational"
+    ? parseFloat((getDeterministicValue(s.id, 20) / 1000).toFixed(3))
+    : parseFloat((getDeterministicValue(s.id, 15, 5)).toFixed(2));
+  return {
+    ...s,
+    requestRate: s.requestRate ?? defaultRps,
+    errorRate: s.errorRate ?? defaultErr,
+    cpuLoad: s.cpuLoad ?? defaultCpu
+  };
+};
+
+const ENRICHED_INITIAL_SERVICES = INITIAL_SERVICES.map(ENRICH_SERVICE);
+
 const PulseContext = createContext<PulseContextType | undefined>(undefined);
 
 export const PulseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [services, setServices] = useState<Service[]>(INITIAL_SERVICES);
+  const [services, setServices] = useState<Service[]>(ENRICHED_INITIAL_SERVICES);
   const [incidents, setIncidents] = useState<Incident[]>(INITIAL_INCIDENTS);
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>(INITIAL_LOGS);
   const [historyPoints, setHistoryPoints] = useState<IndexHistoryPoint[]>(STATIC_HISTORICAL_POINTS());
@@ -860,17 +887,31 @@ export const PulseProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       tickCounter.current = 0;
       setLastUpdated("Just now");
 
-      // Fluctuates latencies for all services, and once in a while do minor simulations
+      // Fluctuates latencies and real-time telemetries for all services
       setServices(prev => 
         prev.map(serv => {
-          // Operational nodes have normal fluctuation
           let latChange = Math.floor((Math.random() * 12) - 6); // -6 to +6ms
           let newLat = Math.max(10, serv.latency + latChange);
           
-          // Operational nodes checks trigger logging
+          const rpsDelta = Math.floor((Math.random() * 10) - 5);
+          const newRps = Math.max(10, (serv.requestRate ?? 150) + rpsDelta);
+          
+          let newCpu = (serv.cpuLoad ?? 20) + Math.floor((Math.random() * 6) - 3);
+          newCpu = Math.max(5, Math.min(99, newCpu));
+          
+          let newErr = serv.errorRate ?? 0;
+          if (serv.status === "operational") {
+            newErr = parseFloat(Math.max(0, Math.min(0.25, (serv.errorRate ?? 0) + (Math.random() * 0.008 - 0.004))).toFixed(3));
+          } else {
+            newErr = parseFloat(Math.max(1.5, Math.min(98.5, (serv.errorRate ?? 15) + (Math.random() * 4 - 2))).toFixed(2));
+          }
+
           return {
             ...serv,
-            latency: newLat
+            latency: newLat,
+            requestRate: newRps,
+            cpuLoad: newCpu,
+            errorRate: newErr
           };
         })
       );
@@ -971,7 +1012,7 @@ export const PulseProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const repairAll = () => {
-    setServices(INITIAL_SERVICES);
+    setServices(ENRICHED_INITIAL_SERVICES);
     setIncidents([]);
     setActivityLogs(prev => [
       {

@@ -20,6 +20,9 @@ export interface Service {
   components: ServiceComponent[];
   dependencies: string[]; // List of service ids it links to or depends on
   lastChecked: string;
+  requestRate?: number; // requests/sec
+  errorRate?: number;   // % error rate
+  cpuLoad?: number;     // % system CPU usage
 }
 
 export interface Incident {
