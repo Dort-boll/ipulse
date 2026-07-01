@@ -431,16 +431,7 @@ export default function App() {
               <span>TEST LATENCY</span>
             </button>
 
-            {/* Quick Overrides */}
-            {services.some(s => s.status !== "operational") && (
-              <button 
-                onClick={repairAll}
-                className="flex items-center justify-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 font-mono text-[10px] rounded transition-all duration-150 cursor-pointer"
-              >
-                <ShieldCheck className="w-2.5 h-2.5" />
-                <span>REPAIR</span>
-              </button>
-            )}
+
 
             {/* Quick Chaos panel toggle */}
             <button 
