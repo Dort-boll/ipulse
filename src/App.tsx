@@ -162,6 +162,21 @@ export default function App() {
     return <Activity className={className} />;
   };
 
+  // Helper to render service icon or custom image logo (e.g. cyber GitHub logo)
+  const renderServiceIcon = (service: Service, className = "w-5 h-5") => {
+    if (service.id === "github") {
+      return (
+        <img 
+          src="/src/assets/images/cyber_github_logo_1782883960359.jpg" 
+          className={`${className} rounded object-cover`} 
+          alt="GitHub Logo" 
+          referrerPolicy="no-referrer"
+        />
+      );
+    }
+    return renderLucide(service.icon, className);
+  };
+
   // Extract filtered service lists
   const filteredServices = services.filter(service => {
     const matchesSearch = service.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -839,8 +854,8 @@ export default function App() {
                             >
                               <div className="flex justify-between items-start">
                                 <div className="flex items-center gap-2.5 truncate">
-                                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border ${getStatusColor(service.status)}`}>
-                                    {renderLucide(service.icon, "w-4 h-4")}
+                                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border overflow-hidden ${getStatusColor(service.status)}`}>
+                                    {renderServiceIcon(service, "w-full h-full")}
                                   </div>
                                   <div className="truncate">
                                     <h5 className="font-bold text-sm text-white group-hover:text-indigo-300 transition-colors duration-150 leading-tight">
@@ -1362,8 +1377,8 @@ export default function App() {
                     </div>
                     
                     <div className="flex items-start md:items-center gap-4">
-                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border-2 ${getStatusColor(serv.status)}`}>
-                        {renderLucide(serv.icon, "w-7 h-7")}
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border-2 overflow-hidden ${getStatusColor(serv.status)}`}>
+                        {renderServiceIcon(serv, "w-full h-full")}
                       </div>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
